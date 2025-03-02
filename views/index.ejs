@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Budget Buddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/ae353f9b79.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="w-full min-h-screen bg-white-950">
+    <nav class="bg-indigo-950 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/home" class="text-2xl font-bold">Budget Buddy</a>
+            <div>
+                <a href="/home" class="mx-2 hover:underline hover:font-semibold">Home</a>
+                <a href="/add" class="mx-2 hover:underline hover:font-semibold">Add Expense</a>
+                <a href="/analysis" class="mx-2 hover:underline hover:font-semibold">Analysis</a>
+                <a href="/currency-converter" class="mx-2 hover:underline hover:font-semibold">FX</a>
+                <a href="/savings" class="mx-2 hover:underline hover:font-semibold">Savings</a>
+                <a href="/logout" class="mx-2 hover:underline hover:font-semibold">Log Out</a>
+            </div>
+        </div>
+    </nav>
+
+    <a href="/calculator"
+        class="absolute top-44 right-12 bg-indigo-950 text-white rounded-full text-4xl p-5 hover:bg-indigo-700 transition">
+        <i class="fas fa-calculator fa-lg"></i>
+    </a>
+
+    <h1 class="text-cyan-600 text-4xl text-center px-40 py-10 font-bold mt-2">Welcome to Your Expense Tracker</h1>
+    <% if(expenses.length> 0) { %>
+        <form method="GET" action="/home" class="text-center mb-5">
+            <label for="sortBy" class="text-black">Sort By:</label>
+            <select id="sortBy" name="sortBy" onchange="this.form.submit()" class="border border-gray-300">
+                <option value="date_desc" <%=sortBy==='date_desc' ? 'selected' : '' %>>Date: Newest to Oldest</option>
+                <option value="date_asc" <%=sortBy==='date_asc' ? 'selected' : '' %>>Date: Oldest to Newest</option>
+                <option value="amount_asc" <%=sortBy==='amount_asc' ? 'selected' : '' %>>Amount: Low to High</option>
+                <option value="amount_desc" <%=sortBy==='amount_desc' ? 'selected' : '' %>>Amount: High to Low</option>
+            </select>
+        </form>
+        <div class="text-center my-5">
+            <button onclick="window.location.href='/download-pdf'"
+                class="px-5 text-l my-3 font-semibold w-96 py-3 text-white rounded-lg bg-indigo-950 hover:bg-indigo-700 cursor-pointer">
+                Download All Expenses as PDF
+            </button>
+        </div>
+
+        <table class="table-auto text-black text-center text-xl my-0 mx-auto w-3/4">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border border-gray-300 px-4 py-2">Amount</th>
+                    <th class="border border-gray-300 px-4 py-2">Description</th>
+                    <th class="border border-gray-300 px-4 py-2">Category</th>
+                    <th class="border border-gray-300 px-4 py-2">Date</th>
+                    <th class="border border-white-500">Edit</th>
+                    <th class="border border-gray-300 px-4 py-2">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% expenses.forEach(expense=> { %>
+                    <tr class="cursor-pointer hover:bg-gray-200">
+                        <td class="border border-gray-300 px-4 py-2">
+                            <%= expense.amount %>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <%= expense.description %>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <%= expense.category %>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <%= expense.date.toDateString() %>
+                        </td>
+                        <td class="border border-white-500">
+                            <form action="/edit/<%= expense.id %>" method="GET">
+                                <button type="submit"><i class="fa-solid fa-pen fa-xs"
+                                        style="color: #4caf50;"></i></button>
+                            </form>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <form action="/delete/<%= expense.id %>" method="POST">
+                                <button type="submit">
+                                    <i class="fa-solid fa-trash-can fa-xs" style="color: #ff3d3d;"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+        </table>
+        <% } else { %>
+            <h2 class="font-semibold text-slate-400 text-2xl">No Expenses....</h2>
+            <% } %>
+                <div class="text-center my-10">
+                    <a href="/add"
+                        class="px-5 text-l font-semibold w-44 py-3 text-white rounded-lg bg-indigo-950 hover:bg-indigo-700 cursor-pointer inline-block">
+                        Add Expense
+                    </a>
+                </div>
+</body>
+
+</html>

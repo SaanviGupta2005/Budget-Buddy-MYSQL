@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="bg-indigo-950 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/home" class="text-2xl font-bold">Budget Buddy</a>
+            <div>
+                <a href="/home" class="mx-2 hover:underline hover:font-semibold">Home</a>
+                <a href="/add" class="mx-2 hover:underline hover:font-semibold">Add Expense</a>
+                <a href="/analysis" class="mx-2 hover:underline hover:font-semibold">Analysis</a>
+                <a href="/currency-converter" class="mx-2 hover:underline hover:font-semibold">FX</a>
+                <a href="/savings" class="mx-2 hover:underline hover:font-semibold">Savings</a>
+                <a href="/logout" class="mx-2 hover:underline hover:font-semibold">Log Out</a>
+            </div>
+        </div>
+    </nav>
+    <div class="bg-gray-200 min-h-screen">
+        <div class="container mx-auto p-8">
+            <h1 class="text-3xl font-bold text-center mb-8 text-indigo-800">Expense Analysis</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white p-4 rounded-lg shadow-lg text-center">
+                    <h2 class="text-xl font-semibold text-indigo-800">Daily Expense</h2>
+                    <p class="text-2xl font-bold text-green-600">₹<%= dailyTotal %>
+                    </p>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow-lg text-center">
+                    <h2 class="text-xl font-semibold text-indigo-800">Weekly Expense</h2>
+                    <p class="text-2xl font-bold text-yellow-600">₹<%= weeklyTotal %>
+                    </p>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow-lg text-center">
+                    <h2 class="text-xl font-semibold text-indigo-800">Monthly Expense</h2>
+                    <p class="text-2xl font-bold text-red-600">₹<%= monthlyTotal %>
+                    </p>
+                </div>
+            </div>
+
+            <h1 class="text-2xl font-bold text-center mb-8 text-gray-700 underline">Expense By Category</h1>
+
+            <div class="flex justify-center items-start mb-8">
+                <div class="bg-white p-8 rounded-lg shadow-lg w-1/5 mx-4">
+                    <h2 class="text-xl font-semibold text-indigo-800 mb-4">Category Breakdown</h2>
+                    <ul>
+                        <% categories.forEach((category, index)=> { %>
+                            <li class="mb-2">
+                                <span class="font-semibold text-gray-700">
+                                    <%= category %>:
+                                </span>
+                                <span class="text-indigo-800 font-bold">₹<%= totalAmounts[index] %></span>
+                            </li>
+                            <% }); %>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg w-2/5 mx-4">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+
+            <h1 class="text-2xl font-bold text-center mb-8 text-gray-700 underline">Monthly Expense Data for the Year
+            </h1>
+
+            <div class="bg-white p-8 rounded-lg shadow-lg mb-8 w-4/5 mx-auto">
+                <canvas id="monthlyExpenseChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <form id="data-form">
+        <input type="hidden" id="categories" value="<%= categories.join(',') %>">
+        <input type="hidden" id="totalAmounts" value="<%= totalAmounts.join(',') %>">
+    </form>
+
+    <form id="data-form">
+        <input type="hidden" id="monthLabels" value="<%= monthNames.join(',') %>">
+        <input type="hidden" id="monthlyTotals" value="<%= monthlyTotals.join(',') %>">
+    </form>
+
+    <script>
+        const ctx1 = document.getElementById('expenseChart').getContext('2d');
+        const ctx2 = document.getElementById('monthlyExpenseChart').getContext('2d');
+
+        const categories = document.getElementById('categories').value.split(',');
+        const totalAmounts = document.getElementById('totalAmounts').value.split(',').map(Number);
+
+        const expenseData = {
+            labels: categories,
+            datasets: [{
+                label: 'Expenses by Category',
+                data: totalAmounts,
+                backgroundColor: [
+                    'rgba(255, 137, 137,0.2)',
+                    'rgba(137, 188, 255,0.2)',
+                    'rgba(51, 178, 50,0.2)',
+                    'rgba(240, 242, 36,0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 137, 137,1)',
+                    'rgba(137, 188, 255,1)',
+                    'rgba(51, 178, 50,1)',
+                    'rgba(240, 242, 36,1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const config1 = {
+            type: 'pie',
+            data: expenseData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.raw.toLocaleString();
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        new Chart(ctx1, config1);
+
+        const monthLabels = document.getElementById('monthLabels').value.split(',');
+        const monthlyData = document.getElementById('monthlyTotals').value.split(',').map(Number);
+
+        const monthlyExpenseData = {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Total Monthly Expenses',
+                data: monthlyData,
+                backgroundColor: [
+                    'rgba(255, 137, 137,0.2)',
+                    'rgba(137, 188, 255,0.2)',
+                    'rgba(51, 178, 50,0.2)',
+                    'rgba(240, 242, 36,0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 137, 137,1)',
+                    'rgba(137, 188, 255,1)',
+                    'rgba(51, 178, 50,1)',
+                    'rgba(240, 242, 36,1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const config2 = {
+            type: 'bar',
+            data: monthlyExpenseData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += '₹' + context.raw.toLocaleString();
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Total Expenses (₹)'
+                        }
+                    }
+                }
+            }
+        };
+
+        new Chart(ctx2, config2);
+    </script>
+
+</body>
+
+</html>

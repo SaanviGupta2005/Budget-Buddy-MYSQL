@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="w-full min-h-screen bg-white-950">
+    <nav class="bg-indigo-950 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/home" class="text-2xl font-bold">Budget Buddy</a>
+            <div>
+                <a href="/home" class="mx-2 hover:underline hover:font-semibold">Home</a>
+                <a href="/add" class="mx-2 hover:underline hover:font-semibold">Add Expense</a>
+                <a href="/analysis" class="mx-2 hover:underline hover:font-semibold">Analysis</a>
+                <a href="/currency-converter" class="mx-2 hover:underline hover:font-semibold">FX</a>
+                <a href="/savings" class="mx-2 hover:underline hover:font-semibold">Savings</a>
+                <a href="/logout" class="mx-2 hover:underline hover:font-semibold">Log Out</a>
+            </div>
+        </div>
+    </nav>
+
+    
+    <div class="bg-gray-200 min-h-screen flex items-center justify-center">
+        <div class="w-5/12 h-1/2 mx-auto p-4 bg-gray-100 rounded shadow-lg">
+            <h1 class="text-indigo-800 text-4xl text-center px-40 py-10 font-bold mt-2">Calculator</h1>
+            <input type="text" id="result" class="border border-gray-300 p-2 w-full text-right text-xl" readonly>
+        
+            <div class="grid grid-cols-4 gap-2 my-4 text-xl">
+                <button onclick="clearResult()" class="bg-indigo-950 text-white p-2 rounded">C</button>
+                <button onclick="appendToResult('7')" class="bg-gray-200 p-2 rounded">7</button>
+                <button onclick="appendToResult('8')" class="bg-gray-200 p-2 rounded">8</button>
+                <button onclick="appendToResult('9')" class="bg-gray-200 p-2 rounded">9</button>
+                <button onclick="appendToResult('/')" class="bg-indigo-950 text-white p-2 rounded">/</button>
+        
+                <button onclick="appendToResult('4')" class="bg-gray-200 p-2 rounded">4</button>
+                <button onclick="appendToResult('5')" class="bg-gray-200 p-2 rounded">5</button>
+                <button onclick="appendToResult('6')" class="bg-gray-200 p-2 rounded">6</button>
+                <button onclick="appendToResult('*')" class="bg-indigo-950 text-white p-2 rounded">*</button>
+        
+                <button onclick="appendToResult('1')" class="bg-gray-200 p-2 rounded">1</button>
+                <button onclick="appendToResult('2')" class="bg-gray-200 p-2 rounded">2</button>
+                <button onclick="appendToResult('3')" class="bg-gray-200 p-2 rounded">3</button>
+                <button onclick="appendToResult('-')" class="bg-indigo-950 text-white p-2 rounded">-</button>
+        
+                <button onclick="appendToResult('0')" class="bg-gray-200 p-2 rounded">0</button>
+                <button onclick="calculateResult()" class="bg-green-500 text-white p-2 rounded">=</button>
+                <button onclick="appendToResult('+')" class="bg-orange-400 text-white p-2 rounded">+</button>
+            </div>
+        </div>
+        <img src="/images/calculate.png" alt="image" class="w-88 h-96 mr-24">
+    </div>
+    
+
+    <script>
+        function appendToResult(value) {
+            document.getElementById('result').value += value;
+        }
+
+        function clearResult() {
+            document.getElementById('result').value = '';
+        }
+
+        function calculateResult() {
+            const resultField = document.getElementById('result');
+            try {
+                resultField.value = eval(resultField.value);
+            } catch (error) {
+                resultField.value = 'Error';
+            }
+        }
+
+        document.addEventListener('keydown', function (event) {
+            const key = event.key;
+            const validKeys = '0123456789/*-+';
+
+            if (validKeys.includes(key)) {
+                appendToResult(key);
+                event.preventDefault();
+            } else if (key === 'Enter') {
+                calculateResult();
+                event.preventDefault();
+            } else if (key === 'Backspace') {
+                const resultField = document.getElementById('result');
+                resultField.value = resultField.value.slice(0, -1);
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+
+</html>
