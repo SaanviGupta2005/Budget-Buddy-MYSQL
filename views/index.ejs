@@ -99,4 +99,21 @@
                 </div>
 </body>
 
+<!-- Socket.IO client-side script -->
+<script src="/socket.io/socket.io.js"></script> <!-- Updated for local socket.io.js -->
+<script>
+    const socket = io();
+
+    // Listen for incoming messages
+    socket.on('message', (msg) => {
+        console.log('New message:', msg); // You should see this in the browser's console
+    });
+
+    // Emit a message to the server when the button is clicked
+    document.getElementById('sendMessageBtn').addEventListener('click', () => {
+        const message = "Hello from the client!";
+        socket.emit('sendMessage', message);
+    });
+</script>
+
 </html>

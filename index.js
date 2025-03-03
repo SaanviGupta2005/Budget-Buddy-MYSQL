@@ -11,13 +11,35 @@ const PDFDocument = require('pdfkit');
 const Expense = require('./models/expense');
 const User = require('./models/user');
 const { Op } = require('sequelize');
+const http = require('http'); 
+const socketIo = require('socket.io'); 
 const app = express();
+
+const server = http.createServer(app);
+const io = socketIo(server);
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
 app.set('view engine', 'ejs');
 
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    // Emit a welcome message on connection
+    socket.emit('message', 'Welcome to the expense tracker!');
+
+    // Listen for messages from the client
+    socket.on('sendMessage', (msg) => {
+        console.log('Message from client:', msg);
+        io.emit('message', msg);  // Emit to all connected clients
+    });
+
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');
+    });
+});
 // Routes
 
 app.use((req, res, next) => {
